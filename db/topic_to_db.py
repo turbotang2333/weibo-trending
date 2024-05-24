@@ -59,7 +59,7 @@ def process_md_file(database, filename):
             print("\n")
             sys.stdout.flush()  # 手动刷新输出缓冲区
     except Error as e:
-        print(f"\r错误！无法处理文件 {safe_filename}")
+        print(f"\r错误！无法处理文件 {safe_filename}，错误信息：{e}")
         sys.stdout.flush()  # 手动刷新输出缓冲区
 
 # 删除导入的错误日期数据

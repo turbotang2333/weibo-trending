@@ -4,37 +4,35 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: ${{ matrix.kind }} ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macOS-latest, ubuntu-latest, windows-latest]
-
+    name: Build and Test
+    runs-on: ubuntu-latest
     steps:
-      - name: Clone repository
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Install deno
         uses: denoland/setup-deno@v1
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+         python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -s requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Log versions
         run: |
           deno --version
       - name: Run deno fmt
         run: deno fmt --check
-
       - name: Run deno lint
         run: deno lint --unstable
-
       - name: Run deno test
-        run: deno task test
+        run: deno test
 
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: |
-          startsWith(github.repository, 'justjavac') && 
-          startsWith(github.ref, 'refs/tags/')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          draft: true
+      - name: Run Python tests
+        run: |
+          python db/topic_to_db_auto.py

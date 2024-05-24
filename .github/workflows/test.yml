@@ -1,0 +1,14 @@
+name: Test Act Workflow
+
+on: [push]
+
+jobs:
+  test-act:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Run a one-liner script
+      run: echo "Act is working!"

@@ -15,6 +15,12 @@
       "driver": "SQLite",
       "name": "weibo_topics",
       "database": "${workspaceFolder:weibo-trending}/weibo_topics.db"
+    },
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "weibo2",
+      "database": "${workspaceFolder:weibo-trending}/weibo_topics2.db"
     }
   ]
 }
