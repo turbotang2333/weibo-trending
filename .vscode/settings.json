@@ -7,5 +7,14 @@
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
-  }
+  },
+  "sqltools.useNodeRuntime": true,
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "weibo_topics",
+      "database": "${workspaceFolder:weibo-trending}/weibo_topics.db"
+    }
+  ]
 }
