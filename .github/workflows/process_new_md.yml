@@ -31,7 +31,7 @@ jobs:
         ls -la
 
     - name: Ensure database file is writable
-      run: chmod +w path/to/database/file
+      run: chmod +w weibo_topics.db
 
     - name: Run topic_to_db_auto.py
       run: python topic_to_db_auto.py
