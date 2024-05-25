@@ -3,15 +3,14 @@ name: Process New MD Files
 on:
   push:
     paths:
-      - 'archives/**/*.md'
+      - '**/*.md'
 
 jobs:
-  process-md:
+  process_md:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -21,7 +20,12 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        if [ -s requirements.txt ]; then pip install -r requirements.txt; fi
+        if [-e requirements.txt]; then pip install -r requirements.txt; fi
 
-    - name: Run topic_to_db_auto.py
+    - name: Log versions
+      run: |
+        deno --version
+        python --version
+
+    - name: Run Python script
       run: python db/topic_to_db_auto.py
