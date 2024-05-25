@@ -6,6 +6,10 @@ jobs:
   process-md:
     runs-on: ubuntu-latest
 
+    container:
+      image: node:16-buster-slim
+      options: --user root  # 使用 root 用户
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
