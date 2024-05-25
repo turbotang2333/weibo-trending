@@ -14,6 +14,9 @@ def create_connection():
         script_dir = os.path.dirname(os.path.abspath(__file__))
         project_root = os.path.abspath(os.path.join(script_dir, os.pardir))
         os.chdir(project_root)
+
+        print(f"Script directory: {script_dir}")
+        print(f"Project root directory: {project_root}")
         
         print("Connecting to the database...")
         conn = sqlite3.connect('weibo_topics.db')
@@ -21,6 +24,8 @@ def create_connection():
         return conn
     except Error as e:
         print(f"Error connecting to the database: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred while connecting to the database: {e}")
 
 # 添加话题到数据库
 def add_topic(conn, topic, date):
@@ -66,6 +71,9 @@ def process_md_file(database, filename):
     except Error as e:
         print(f"Error processing {safe_filename}: {e}")
         sys.stdout.flush()
+    except Exception as e:
+        print(f"An unexpected error occurred while processing {safe_filename}: {e}")
+        sys.stdout.flush()
 
 # 删除错误日期的数据
 def delete_wrong_data(conn, wrong_date):
@@ -79,11 +87,15 @@ def delete_wrong_data(conn, wrong_date):
 
 # 查找最新的 .md 文件
 def find_latest_md_file():
-    md_files = glob.glob('archives/*.md')
-    if not md_files:
+    try:
+        md_files = glob.glob('archives/*.md')
+        if not md_files:
+            return None
+        latest_file = max(md_files, key=os.path.getmtime)
+        return latest_file
+    except Exception as e:
+        print(f"An unexpected error occurred while finding the latest .md file: {e}")
         return None
-    latest_file = max(md_files, key=os.path.getmtime)
-    return latest_file
 
 # 主函数
 def main():

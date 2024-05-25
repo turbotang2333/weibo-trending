@@ -2,34 +2,36 @@ name: Process New MD Files
 
 on:
   push:
-    paths:
-      - "archives/**/*.md"
+    branches:
+      - test
 
 jobs:
   process-md:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Install system dependencies
-      run: |
-        apt-get update
-        apt-get install -y libsqlite3-dev
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsqlite3-dev
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
 
-    - name: Install dependencies
-      run: pip install -r requirements.txt
+      - name: Install dependencies
+        run: pip install -r requirements.txt
 
-    - name: List current directory
-      run: ls
+      - name: Print working directory and list contents
+        run: |
+          pwd
+          ls -la
 
-    - name: Print working directory
-      run: pwd
+      - name: Ensure database file is writable
+        run: chmod 666 DB/weibo_topics.db
 
-    - name: Run topic_to_db_auto.py
-      run: python db/topic_to_db_auto.py
+      - name: Run topic_to_db_auto.py
+        run: python db/topic_to_db_auto.py
