@@ -32,4 +32,4 @@ jobs:
       run: pwd
 
     - name: Run topic_to_db_auto.py
-      run: python DB/topic_to_db_auto.py
+      run: python db/topic_to_db_auto.py
