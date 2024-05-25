@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import os
 import re
 import sqlite3
@@ -11,6 +10,11 @@ import glob
 def create_connection():
     conn = None
     try:
+        # 获取脚本所在的目录，并切换到项目根目录
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        project_root = os.path.abspath(os.path.join(script_dir, os.pardir))
+        os.chdir(project_root)
+        
         print("Connecting to the database...")
         conn = sqlite3.connect('weibo_topics.db')
         print("Connection successful")
@@ -20,11 +24,20 @@ def create_connection():
 
 # 添加话题到数据库
 def add_topic(conn, topic, date):
-    sql = ''' INSERT INTO all_topics(topic, date) VALUES(?,?) '''
-    cur = conn.cursor()
-    cur.execute(sql, (topic, date))
-    conn.commit()
-    return cur.lastrowid
+    try:
+        sql = ''' INSERT INTO all_topics(topic, date) VALUES(?,?) '''
+        cur = conn.cursor()
+        cur.execute(sql, (topic, date))
+        conn.commit()
+        cur.execute("SELECT * FROM all_topics WHERE topic = ? AND date = ?", (topic, date))
+        result = cur.fetchone()
+        if result:
+            print(f"Successfully inserted: {result}")
+        else:
+            print(f"Failed to insert topic '{topic}' with date '{date}'")
+        return cur.lastrowid
+    except Error as e:
+        print(f"Error inserting topic '{topic}': {e}")
 
 # 处理 .md 文件
 def process_md_file(database, filename):
@@ -56,10 +69,13 @@ def process_md_file(database, filename):
 
 # 删除错误日期的数据
 def delete_wrong_data(conn, wrong_date):
-    sql = ''' DELETE FROM all_topics WHERE date = ? '''
-    cur = conn.cursor()
-    cur.execute(sql, (wrong_date,))
-    conn.commit()
+    try:
+        sql = ''' DELETE FROM all_topics WHERE date = ? '''
+        cur = conn.cursor()
+        cur.execute(sql, (wrong_date,))
+        conn.commit()
+    except Error as e:
+        print(f"Error deleting data for date '{wrong_date}': {e}")
 
 # 查找最新的 .md 文件
 def find_latest_md_file():
@@ -71,14 +87,20 @@ def find_latest_md_file():
 
 # 主函数
 def main():
-    database = create_connection()
-    latest_file = find_latest_md_file()
+    try:
+        database = create_connection()
+        if not database:
+            print("Failed to connect to database.")
+            return
 
-    if latest_file:
-        print(f"Processing latest file: {latest_file}")
-        process_md_file(database, latest_file)
-    else:
-        print("No .md files found in the archives folder")
+        latest_file = find_latest_md_file()
+        if latest_file:
+            print(f"Processing latest file: {latest_file}")
+            process_md_file(database, latest_file)
+        else:
+            print("No .md files found in the archives folder")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
     main()
