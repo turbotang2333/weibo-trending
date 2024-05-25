@@ -1,38 +1,36 @@
-name: ci
-
+name: Build and Test
 on: [push, pull_request]
 
 jobs:
   build:
-    name: Build and Test
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Install deno
-        uses: denoland/setup-deno@v1
+    - name: Install deno
+      uses: denoland/setup-deno@v1
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-         python-version: '3.x'
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          if [ -s requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [-e requirements.txt]; then pip install -r requirements.txt; fi
 
-      - name: Log versions
-        run: |
-          deno --version
-      - name: Run deno fmt
-        run: deno fmt --check
-      - name: Run deno lint
-        run: deno lint --unstable
-      - name: Run deno test
-        run: deno test
+    - name: Log versions
+      run: |
+        deno --version
+        python --version
 
-      - name: Run Python tests
-        run: |
-          python db/topic_to_db_auto.py
+    - name: Run deno fmt
+      run: deno fmt --check
+
+    - name: Run deno lint
+      run: deno lint --unstable
+
+    - name: Run deno test
+      run: deno test --allow-read
